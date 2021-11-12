@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jpmc.crs.model.Student;
 import com.jpmc.crs.service.StudentService;
+import com.jpms.crs.exception.StudentNotFound;
 
 /**
  * @author Administrator
@@ -43,7 +44,8 @@ public class StudentRestController {
 
 		Student student = studentService.getStudentById(id);
 		if (student == null) {
-			return new ResponseEntity("No student found for ID " + id, HttpStatus.NOT_FOUND);
+			throw new StudentNotFound("No student found for ID " + id);
+			//return new ResponseEntity("No student found for ID " + id, HttpStatus.NOT_FOUND);
 		}
 
 		return new ResponseEntity(student, HttpStatus.OK);
@@ -79,5 +81,4 @@ public class StudentRestController {
 
 		return new ResponseEntity(student, HttpStatus.OK);
 	}
-	
 }
