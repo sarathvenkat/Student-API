@@ -15,7 +15,8 @@ public class StudentService {
 	StudentDao studentDao;
 
 	public Student createStudent(Student student) {
-		return studentDao.createStudent(student);
+		 studentDao.registerStudent(student);
+		 return student;
 	};
 	
 	public Student getStudentById(Integer id) {

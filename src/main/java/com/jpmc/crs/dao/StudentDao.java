@@ -3,14 +3,18 @@
  */
 package com.jpmc.crs.dao;
 
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.stereotype.Repository;
 
-import com.jpmc.crs.model.Address;
 import com.jpmc.crs.model.Student;
+import com.jpmc.crs.utils.DBUtils;
 
 /**
  * @author Administrator
@@ -19,66 +23,105 @@ import com.jpmc.crs.model.Student;
 @Repository
 public class StudentDao {
 
-	Random random =  new Random();
-	
-	// Dummy database. Initialize with some dummy values.
-	private static List<Student> students;
-	{
-		students = new ArrayList();
-		students.add(new Student(101, "Smith", "sruss@gmail.com", new Address("10/11", "Bakers Street", 3495435L)));
-		students.add(new Student(102, "Russ", "kwilliams@gmail.com", new Address("12/11", "Tendown Street", 248564723L)));
-		students.add(new Student(103, "Kate", "Viral@gmail.com", new Address("15/11", "Bakers Street", 34524L)));
-		students.add(new Student(104, "Jim", "jim@gmail.com", new Address("22/16", "Bakers Street", 432534L)));
-	}
-
-	public Student createStudent(Student student) {
-		// TODO Auto-generated method stub
-		student.setId(random.nextInt());
-		students.add(student);
-		return student;
-
-	}
-
 	public Student getStudentById(Integer id) {
 		// TODO Auto-generated method stub
-		for (Student c : students) {
-			if (c.getId().equals(id)) {
-				return c;
-			}
-		}
-		return null;
+		Student student = null;		
+		Connection conn = DBUtils.getConnection();
+		PreparedStatement stmnt = null;
+		int studentId = 0;
+		try {
+				PreparedStatement stmntStud = conn.prepareStatement("select * from student where id=?");
 
+				stmntStud.setInt(1, id);
+			
+				ResultSet rs = stmntStud.executeQuery();
+				while (rs.next()) { 
+				student =  new Student(rs.getInt(1), rs.getString(2), rs.getString(3), null);		
+				}			
+			} catch (SQLException ex) {
+			throw new RuntimeException();
+		}
+		return student;
 	}
 
 	public Student deleteStudent(Integer id) {
-		// TODO Auto-generated method stub
-		for (Student c : students) {
-			if (c.getId().equals(id)) {
-				students.remove(c);
-				return c;
-			}
+		// TODO Auto-generated method stub	
+		Student student = null;
+		Connection conn = DBUtils.getConnection();
+		PreparedStatement stmnt = null;
+		int studentId = 0;
+		try {
+				PreparedStatement stmntStud = conn.prepareStatement("delete from student where id=?");
+
+				stmntStud.setInt(1, id);
+			
+				int rows = stmntStud.executeUpdate();
+				student = new Student(id, null, null, null);
+			} catch (SQLException ex) {
+			throw new RuntimeException();
 		}
-		return null;
+		return student;
 
 	}
 
 	public Student updateStudent(Student student,Integer id) {
 		// TODO Auto-generated method stub
-		for (Student c : students) {
-			if (c.getId().equals(id)) {
-				student.setId(c.getId());
-				students.remove(c);
-				students.add(student);
-				return student;
-			}
-		}
+		Connection conn = DBUtils.getConnection();
+		PreparedStatement stmnt = null;
+		int studentId = 0;
+		try {
+				PreparedStatement stmntStud = conn.prepareStatement("update student set ID=?, name=?, email=? where ID=?");
 
-		return null;
+				stmntStud.setInt(1, student.getId());
+				stmntStud.setString(2, student.getName());
+				stmntStud.setString(3, student.getEmail());
+				stmntStud.setInt(4, id);
+			
+				int i= stmntStud.executeUpdate();
+
+			} catch (SQLException ex) {
+			throw new RuntimeException(student.getName());
+		}
+		return student;
 	}
 
 	public List<Student> getStudents() {
 		// TODO Auto-generated method stub
+		Student student = null;		
+		List<Student> students = new ArrayList<Student>();
+		Connection conn = DBUtils.getConnection();
+		PreparedStatement stmnt = null;
+		int studentId = 0;
+		try {
+				PreparedStatement stmntStud = conn.prepareStatement("select * from student");
+			
+				ResultSet rs = stmntStud.executeQuery();
+				while(rs.next()) {
+				student =  new Student(rs.getInt("ID"), rs.getString("name"), rs.getString("email"), null);	
+				students.add(student);
+				}
+			} catch (SQLException ex) {
+			throw new RuntimeException(student.getName());
+		}
 		return students;
 	}
+	
+	public int registerStudent(Student student) {
+		Connection conn = DBUtils.getConnection();
+		PreparedStatement stmnt = null;
+		int studentId = 0;
+		try {
+				PreparedStatement stmntStud = conn.prepareStatement("insert into student values(?,?,?)");
 
+				stmntStud.setInt(1, student.getId());
+				stmntStud.setString(2, student.getName());
+				stmntStud.setString(3, student.getEmail());
+			
+				int i= stmntStud.executeUpdate();
+
+			} catch (SQLException ex) {
+			throw new RuntimeException(student.getName());
+		}
+		return studentId;
+	}
 }

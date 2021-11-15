@@ -51,7 +51,7 @@ public class StudentRestController {
 		return new ResponseEntity(student, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/post/students")
+	@PostMapping(value = "/students")
 	public ResponseEntity createstudent(@RequestBody Student student) {
 
 		Student studentSaved = studentService.createStudent(student);
@@ -59,7 +59,7 @@ public class StudentRestController {
 		return new ResponseEntity(studentSaved, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/delete/students/{id}")
+	@DeleteMapping("/students/{id}")
 	public ResponseEntity deletestudent(@PathVariable Integer id) {
 
 		if (null == studentService.deleteStudent(id)) {
@@ -70,7 +70,7 @@ public class StudentRestController {
 
 	}
 
-	@PutMapping("/put/students/{id}")
+	@PutMapping("/students/{id}")
 	public ResponseEntity updatestudent(@PathVariable Integer id, @RequestBody Student student) {
 
 		student = studentService.updateStudent(student, id);
